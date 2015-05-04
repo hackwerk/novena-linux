@@ -28,6 +28,89 @@
 		stdout-path = &uart2;
 	};
 
+	soc {
+
+		caam_sm: caam-sm@00100000 {
+			compatible = "fsl,imx6q-caam-sm";
+			reg = <0x00100000 0x3fff>;
+		};
+
+		irq_sec_vio: caam_secvio {
+			compatible = "fsl,imx6q-caam-secvio";
+			interrupts = <0 20 0x04>;
+			secvio_src = <0x8000001d>;
+		};
+
+
+		aips-bus@02000000 { /* AIPS1 */
+			spba-bus@02000000 {
+				ecspi5: ecspi@02018000 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "fsl,imx6q-ecspi", "fsl,imx51-ecspi";
+					reg = <0x02018000 0x4000>;
+					interrupts = <0 35 IRQ_TYPE_LEVEL_HIGH>;
+					clocks = <&clks IMX6Q_CLK_ECSPI5>,
+						 <&clks IMX6Q_CLK_ECSPI5>;
+					clock-names = "ipg", "per";
+					status = "disabled";
+				};
+			};
+
+			caam_snvs: caam-snvs@020cc000 {
+				compatible = "fsl,imx6q-caam-snvs";
+				reg = <0x020cc000 0x4000>;
+			};
+
+			snvs@020cc000 {
+				compatible = "fsl,sec-v4.0-mon", "simple-bus";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				ranges = <0 0x020cc000 0x4000>;
+
+				snvs-rtc-lp@34 {
+					compatible = "fsl,sec-v4.0-mon-rtc-lp";
+					reg = <0x34 0x58>;
+					interrupts = <0 19 IRQ_TYPE_LEVEL_HIGH>,
+						     <0 20 IRQ_TYPE_LEVEL_HIGH>;
+				};
+			};
+		};
+
+		aips-bus@02100000 { /* AIPS2 */
+			compatible = "fsl,aips-bus", "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0x02100000 0x100000>;
+			ranges;
+
+			crypto: caam@2100000 {
+				compatible = "fsl,sec-v4.0";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				reg = <0x2100000 0x40000>;
+				ranges = <0 0x2100000 0x40000>;
+				interrupt-parent = <&intc>; /* interrupts = <0 92 0x4>; */
+				clocks = <&clks IMX6QDL_CAAM_MEM>, <&clks IMX6QDL_CAAM_ACLK>, <&clks IMX6QDL_CAAM_IPG> ,<&clks IMX6QDL_CLK_EIM_SLOW>;
+				clock-names = "caam_mem", "caam_aclk", "caam_ipg", "caam_emi_slow";
+
+				sec_jr0: jr0@1000 {
+					compatible = "fsl,sec-v4.0-job-ring";
+					reg = <0x1000 0x1000>;
+					interrupt-parent = <&intc>;
+					interrupts = <0 105 0x4>;
+				};
+
+				sec_jr1: jr1@2000 {
+					compatible = "fsl,sec-v4.0-job-ring";
+					reg = <0x2000 0x1000>;
+					interrupt-parent = <&intc>;
+					interrupts = <0 106 0x4>;
+				};
+			};
+		};
+	};
+
 	display-subsystem {
 		/* Hack to get ipu2 assigned to ldb, and ipu1 to hdmi */
 		ports = <&ipu1_di0>, <&ipu2_di0>, <&ipu2_di1>, <&ipu1_di1>;
