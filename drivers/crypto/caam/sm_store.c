@@ -46,11 +46,11 @@ void sm_show_page(struct device *dev, struct sm_page_descriptor *pgdesc)
 	struct caam_drv_private_sm *smpriv = dev_get_drvdata(dev);
 	u32 i, *smdata;
 
-	dev_info(dev, "physical page %d content at 0x%08x\n",
+	dev_dbg(dev, "physical page %d content at 0x%08x\n",
 		 pgdesc->phys_pagenum, pgdesc->pg_base);
 	smdata = pgdesc->pg_base;
 	for (i = 0; i < (smpriv->page_size / sizeof(u32)); i += 4)
-		dev_info(dev, "[0x%08x] 0x%08x 0x%08x 0x%08x 0x%08x\n",
+		dev_dbg(dev, "[0x%08x] 0x%08x 0x%08x 0x%08x 0x%08x\n",
 			 (u32)&smdata[i], smdata[i], smdata[i+1], smdata[i+2],
 			 smdata[i+3]);
 }
@@ -420,7 +420,7 @@ int slot_alloc(struct device *dev, u32 unit, u32 size, u32 *slot)
 	struct keystore_data *ksdata = smpriv->pagedesc[unit].ksdata;
 	u32 i;
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_alloc(): requesting slot for %d bytes\n", size);
+	dev_dbg(dev, "slot_alloc(): requesting slot for %d bytes\n", size);
 #endif
 
 	if (size > smpriv->slot_size)
@@ -431,7 +431,7 @@ int slot_alloc(struct device *dev, u32 unit, u32 size, u32 *slot)
 			ksdata->slot[i].allocated = 1;
 			(*slot) = i;
 #ifdef SM_DEBUG
-			dev_info(dev, "slot_alloc(): new slot %d allocated\n",
+			dev_dbg(dev, "slot_alloc(): new slot %d allocated\n",
 				 *slot);
 #endif
 			return 0;
@@ -449,7 +449,7 @@ int slot_dealloc(struct device *dev, u32 unit, u32 slot)
 	u8 __iomem *slotdata;
 
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_dealloc(): releasing slot %d\n", slot);
+	dev_dbg(dev, "slot_dealloc(): releasing slot %d\n", slot);
 #endif
 	if (slot >= ksdata->slot_count)
 		return -EINVAL;
@@ -462,7 +462,7 @@ int slot_dealloc(struct device *dev, u32 unit, u32 slot)
 
 		ksdata->slot[slot].allocated = 0;
 #ifdef SM_DEBUG
-		dev_info(dev, "slot_dealloc(): slot %d released\n", slot);
+		dev_dbg(dev, "slot_dealloc(): slot %d released\n", slot);
 #endif
 		return 0;
 	}
@@ -480,7 +480,7 @@ void *slot_get_address(struct device *dev, u32 unit, u32 slot)
 		return NULL;
 
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_get_address(): slot %d is 0x%08x\n", slot,
+	dev_dbg(dev, "slot_get_address(): slot %d is 0x%08x\n", slot,
 		 (u32)ksdata->base_address + slot * smpriv->slot_size);
 #endif
 
@@ -496,7 +496,7 @@ void *slot_get_physical(struct device *dev, u32 unit, u32 slot)
 		return NULL;
 
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_get_physical(): slot %d is 0x%08x\n", slot,
+	dev_dbg(dev, "slot_get_physical(): slot %d is 0x%08x\n", slot,
 		 (u32)ksdata->phys_address + slot * smpriv->slot_size);
 #endif
 
@@ -516,7 +516,7 @@ u32 slot_get_base(struct device *dev, u32 unit, u32 slot)
 	(void)slot;
 
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_get_base(): slot %d = 0x%08x\n",
+	dev_dbg(dev, "slot_get_base(): slot %d = 0x%08x\n",
 		slot, (u32)ksdata->base_address);
 #endif
 
@@ -532,7 +532,7 @@ u32 slot_get_offset(struct device *dev, u32 unit, u32 slot)
 		return -EINVAL;
 
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_get_offset(): slot %d = %d\n", slot,
+	dev_dbg(dev, "slot_get_offset(): slot %d = %d\n", slot,
 		slot * smpriv->slot_size);
 #endif
 
@@ -545,7 +545,7 @@ u32 slot_get_slot_size(struct device *dev, u32 unit, u32 slot)
 
 
 #ifdef SM_DEBUG
-	dev_info(dev, "slot_get_slot_size(): slot %d = %d\n", slot,
+	dev_dbg(dev, "slot_get_slot_size(): slot %d = %d\n", slot,
 		 smpriv->slot_size);
 #endif
 	/* All slots are the same size in the default implementation */
@@ -568,7 +568,7 @@ int kso_init_data(struct device *dev, u32 unit)
 	 */
 	slot_count = smpriv->page_size / smpriv->slot_size;
 #ifdef SM_DEBUG
-	dev_info(dev, "kso_init_data: %d slots initializing\n", slot_count);
+	dev_dbg(dev, "kso_init_data: %d slots initializing\n", slot_count);
 #endif
 
 	keystore_data_size = sizeof(struct keystore_data) +
@@ -583,7 +583,7 @@ int kso_init_data(struct device *dev, u32 unit)
 	}
 
 #ifdef SM_DEBUG
-	dev_info(dev, "kso_init_data: keystore data size = %d\n",
+	dev_dbg(dev, "kso_init_data: keystore data size = %d\n",
 		 keystore_data_size);
 #endif
 
@@ -646,7 +646,7 @@ void sm_init_keystore(struct device *dev)
 	smpriv->slot_get_offset = slot_get_offset;
 	smpriv->slot_get_slot_size = slot_get_slot_size;
 #ifdef SM_DEBUG
-	dev_info(dev, "sm_init_keystore(): handlers installed\n");
+	dev_dbg(dev, "sm_init_keystore(): handlers installed\n");
 #endif
 }
 EXPORT_SYMBOL(sm_init_keystore);
@@ -668,7 +668,7 @@ int sm_establish_keystore(struct device *dev, u32 unit)
 	struct caam_drv_private_sm *smpriv = dev_get_drvdata(dev);
 
 #ifdef SM_DEBUG
-	dev_info(dev, "sm_establish_keystore(): unit %d initializing\n", unit);
+	dev_dbg(dev, "sm_establish_keystore(): unit %d initializing\n", unit);
 #endif
 
 	if (smpriv->data_init == NULL)
@@ -684,7 +684,7 @@ void sm_release_keystore(struct device *dev, u32 unit)
 	struct caam_drv_private_sm *smpriv = dev_get_drvdata(dev);
 
 #ifdef SM_DEBUG
-	dev_info(dev, "sm_establish_keystore(): unit %d releasing\n", unit);
+	dev_dbg(dev, "sm_establish_keystore(): unit %d releasing\n", unit);
 #endif
 	if ((smpriv != NULL) && (smpriv->data_cleanup != NULL))
 		smpriv->data_cleanup(dev, unit);
@@ -1003,12 +1003,12 @@ int caam_sm_startup(struct platform_device *pdev)
 	smpriv->slot_size = 1 << CONFIG_CRYPTO_DEV_FSL_CAAM_SM_SLOTSIZE;
 
 #ifdef SM_DEBUG
-	dev_info(smdev, "max pages = %d, top partition = %d\n",
+	dev_dbg(smdev, "max pages = %d, top partition = %d\n",
 			smpriv->max_pages, smpriv->top_partition);
-	dev_info(smdev, "top page = %d, page size = %d (total = %d)\n",
+	dev_dbg(smdev, "top page = %d, page size = %d (total = %d)\n",
 			smpriv->top_page, smpriv->page_size,
 			smpriv->top_page * smpriv->page_size);
-	dev_info(smdev, "selected slot size = %d\n", smpriv->slot_size);
+	dev_dbg(smdev, "selected slot size = %d\n", smpriv->slot_size);
 #endif
 
 	/*
@@ -1049,7 +1049,7 @@ int caam_sm_startup(struct platform_device *pdev)
 				((smpriv->page_size * page) / sizeof(u32));
 			lpagect++;
 #ifdef SM_DEBUG
-			dev_info(smdev,
+			dev_dbg(smdev,
 				"physical page %d, owning partition = %d\n",
 				lpagedesc[page].phys_pagenum,
 				lpagedesc[page].own_part);

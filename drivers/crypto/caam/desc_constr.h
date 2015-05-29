@@ -13,7 +13,7 @@
 #define DESC_JOB_IO_LEN (CAAM_CMD_SZ * 5 + CAAM_PTR_SZ * 3)
 
 #ifdef DEBUG
-#define PRINT_POS do { printk(KERN_DEBUG "%02d: %s\n", desc_len(desc),\
+#define PRINT_POS do { pr_debug("%02d: %s\n", desc_len(desc),\
 			      &__func__[sizeof("append")]); } while (0)
 #else
 #define PRINT_POS

@@ -19,7 +19,7 @@ static inline void dma_to_sec4_sg_one(struct sec4_sg_entry *sec4_sg_ptr,
 	sec4_sg_ptr->buf_pool_id = 0;
 	sec4_sg_ptr->offset = offset;
 #ifdef DEBUG
-	print_hex_dump(KERN_ERR, "sec4_sg_ptr@: ",
+	print_hex_dump_debug("sec4_sg_ptr@: ",
 		       DUMP_PREFIX_ADDRESS, 16, 4, sec4_sg_ptr,
 		       sizeof(struct sec4_sg_entry), 1);
 #endif

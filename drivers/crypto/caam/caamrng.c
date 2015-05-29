@@ -119,7 +119,7 @@ static void rng_done(struct device *jrdev, u32 *desc, u32 err, void *context)
 	dma_sync_single_for_cpu(jrdev, bd->addr, RN_BUF_SIZE, DMA_FROM_DEVICE);
 
 #ifdef DEBUG
-	print_hex_dump(KERN_ERR, "rng refreshed buf@: ",
+	print_hex_dump_debug("rng refreshed buf@: ",
 		       DUMP_PREFIX_ADDRESS, 16, 4, bd->buf, RN_BUF_SIZE, 1);
 #endif
 }
@@ -217,7 +217,7 @@ static inline void rng_create_sh_desc(struct caam_rng_ctx *ctx)
 			       DMA_TO_DEVICE);
 
 #ifdef DEBUG
-	print_hex_dump(KERN_ERR, "rng shdesc@: ", DUMP_PREFIX_ADDRESS, 16, 4,
+	print_hex_dump_debug("rng shdesc@: ", DUMP_PREFIX_ADDRESS, 16, 4,
 		       desc, desc_bytes(desc), 1);
 #endif
 }
@@ -236,7 +236,7 @@ static inline void rng_create_job_desc(struct caam_rng_ctx *ctx, int buf_id)
 
 	append_seq_out_ptr_intlen(desc, bd->addr, RN_BUF_SIZE, 0);
 #ifdef DEBUG
-	print_hex_dump(KERN_ERR, "rng job desc@: ", DUMP_PREFIX_ADDRESS, 16, 4,
+	print_hex_dump_debug("rng job desc@: ", DUMP_PREFIX_ADDRESS, 16, 4,
 		       desc, desc_bytes(desc), 1);
 #endif
 }
@@ -266,7 +266,7 @@ static inline void test_len(struct hwrng *rng, size_t len, bool wait)
 	if (real_len == 0 && wait)
 		pr_err("WAITING FAILED\n");
 	pr_info("wanted %d bytes, got %d\n", len, real_len);
-	print_hex_dump(KERN_INFO, "random bytes@: ", DUMP_PREFIX_ADDRESS,
+	print_hex_dump_debug("random bytes@: ", DUMP_PREFIX_ADDRESS,
 		       16, 4, buf, real_len, 1);
 	kfree(buf);
 }
