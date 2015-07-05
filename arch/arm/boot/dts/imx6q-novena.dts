@@ -186,6 +186,15 @@
 		mux-int-port = <0x1>;
 		mux-ext-port = <0x3>;
 	};
+
+	fan {
+		compatible = "gpio-fan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio_fan>;
+		gpios = <&gpio3 19 GPIO_ACTIVE_LOW>;
+		gpio-fan,speed-map = <0    1
+							  3000 0>;
+	};
 };
 
 &audmux {
